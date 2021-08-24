@@ -57,6 +57,7 @@ const list = async (req, res) => {
 const update = async (req, res) => {
   try {
     let user = req.profile
+    console.log(req.body)
     user = extend(user, req.body)
     user.updated = Date.now()
     await user.save()
@@ -83,6 +84,15 @@ const remove = async (req, res) => {
     })
   }
 }
+const isSeller = (req, res, next) => {
+ const isSeller = req.profile && req.profile.seller
+ if (!isSeller) {
+ return res.status('403').json({
+ error: "User is not a seller"
+ })
+ }
+ next()
+}
 
 export default {
   create,
@@ -90,5 +100,6 @@ export default {
   read,
   list,
   remove,
-  update
+  update,
+  isSeller
 }

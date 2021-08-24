@@ -8,11 +8,12 @@ import helmet from 'helmet'
 import Template from './../template'
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
-
+import shopRoutes from './routes/shop.routes'
 // modules for server side rendering
 import React from 'react'
-import ReactDOMServer from 'react-dom/server'
+import {renderToString} from 'react-dom/server'
 import MainRouter from './../client/MainRouter'
+import App from './../client/App'
 import { StaticRouter } from 'react-router-dom'
 
 import { ServerStyleSheets, ThemeProvider } from '@material-ui/styles'
@@ -47,15 +48,7 @@ app.use('/', authRoutes)
 app.get('*', (req, res) => {
   const sheets = new ServerStyleSheets()
   const context = {}
-  const markup = ReactDOMServer.renderToString(
-    sheets.collect(
-          <StaticRouter location={req.url} context={context}>
-            <ThemeProvider theme={theme}>
-              <MainRouter />
-            </ThemeProvider>
-          </StaticRouter>
-        )
-    )
+  const markup = renderToString(App)
     if (context.url) {
       return res.redirect(303, context.url)
     }

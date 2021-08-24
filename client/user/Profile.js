@@ -34,11 +34,11 @@ export default function Profile({ match }) {
   const classes = useStyles()
   const [user, setUser] = useState({})
   const [redirectToSignin, setRedirectToSignin] = useState(false)
-   const [hasMounted, setHasMounted] = React.useState(false);
+   
   const jwt = auth.isAuthenticated()
 
   useEffect(() => {
-     setHasMounted(true);
+     
     const abortController = new AbortController()
     const signal = abortController.signal
 
@@ -57,13 +57,12 @@ export default function Profile({ match }) {
     }
 
   }, [match.params.userId])
-      if (!hasMounted) {
-    return null;
-  }
+      
     if (redirectToSignin) {
       return <Redirect to='/signin'/>
     }
     return (
+
       <Paper className={classes.root} elevation={4}>
         <Typography variant="h6" className={classes.title}>
           Profile

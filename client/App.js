@@ -6,14 +6,16 @@ import theme from './theme'
 import { hot } from 'react-hot-loader'
 
 const App = () => {
+  const [hasMounted, setHasMounted] = React.useState(false);
   React.useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side')
-    if (jssStyles) {
-      jssStyles.parentNode.removeChild(jssStyles)
-    }
+     setHasMounted(true);
+    
   }, [])
+   if (!hasMounted) {
+    return null;
+  }
   return (
-  <BrowserRouter>
+  <BrowserRouter >
       <ThemeProvider theme={theme}>
         <MainRouter/>
       </ThemeProvider>

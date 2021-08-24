@@ -14,6 +14,12 @@ const isActive = (history, path) => {
   else
     return {color: '#ffffff'}
 }
+const isPartActive = (history, path) => {
+  if (history.location.pathname.includes(path))
+    return {color: '#bef67a'}
+  else
+    return {color: '#ffffff'}
+}
 const Menu = withRouter(({history}) => (
   <AppBar position="static">
     <Toolbar>
@@ -42,6 +48,12 @@ const Menu = withRouter(({history}) => (
       }
       {
         auth.isAuthenticated() && (<span>
+          
+            {auth.isAuthenticated().user.seller && 
+               (<Link to="/seller/shops">
+               <Button style={isPartActive(history, "/seller/")}> My Shops </Button>
+               </Link>)
+            }
           <Link to={"/user/" + auth.isAuthenticated().user._id}>
             <Button style={isActive(history, "/user/" + auth.isAuthenticated().user._id)}>My Profile</Button>
           </Link>

@@ -10,7 +10,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import auth from './../auth/auth-helper'
 import {read, update} from './api-user.js'
 import {Redirect} from 'react-router-dom'
-
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 const useStyles = makeStyles(theme => ({
   card: {
     maxWidth: 600,
@@ -34,6 +35,10 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: 'auto',
     marginBottom: theme.spacing(2)
+  },
+  subheading: {
+    marginTop: theme.spacing(2),
+    color: theme.palette.openTitle
   }
 }))
 
@@ -45,21 +50,25 @@ export default function EditProfile({ match }) {
     email: '',
     open: false,
     error: '',
-    redirectToProfile: false
+    redirectToProfile: false,
+    seller: false,
   })
+  
   const jwt = auth.isAuthenticated()
 
   useEffect(() => {
+   
     const abortController = new AbortController()
     const signal = abortController.signal
 
     read({
       userId: match.params.userId
     }, {t: jwt.token}, signal).then((data) => {
+      console.log(data)
       if (data && data.error) {
         setValues({...values, error: data.error})
       } else {
-        setValues({...values, name: data.name, email: data.email})
+        setValues({...values, name: data.name, email: data.email,seller:data.seller})
       }
     })
     return function cleanup(){
@@ -72,20 +81,27 @@ export default function EditProfile({ match }) {
     const user = {
       name: values.name || undefined,
       email: values.email || undefined,
-      password: values.password || undefined
+      password: values.password || undefined,
+      seller:values.seller
     }
     update({
-      userId: match.params.userId
+      userId: match.params.userId,
+
     }, {
       t: jwt.token
     }, user).then((data) => {
       if (data && data.error) {
         setValues({...values, error: data.error})
       } else {
-        setValues({...values, userId: data._id, redirectToProfile: true})
+        auth.updateUser(data, ()=>{
+          setValues({...values, userId: data._id, redirectToProfile: true})
+        })
       }
     })
   }
+  const handleCheck = (event, checked) => {
+     setValues({...values, 'seller': checked})
+  }  
   const handleChange = name => event => {
     setValues({...values, [name]: event.target.value})
   }
@@ -108,6 +124,16 @@ export default function EditProfile({ match }) {
               {values.error}
             </Typography>)
           }
+          <Typography variant="subtitle1" className={classes.subheading}>
+            Seller Account
+          </Typography>
+          <FormControlLabel
+                       control={<Switch
+                       checked={values.seller}
+                       onChange={handleCheck}
+                     />}
+                 label={values.seller? 'Active' : 'Inactive'}
+          />
         </CardContent>
         <CardActions>
           <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>Submit</Button>
